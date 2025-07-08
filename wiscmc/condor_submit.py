@@ -196,12 +196,12 @@ def main(args=None) -> None:
     build_executable(executable_name, fragment_abspath, args)
 
     # Create list of files to transfer
+    campaign_dir = f"{MCDIRPATH}/campaigns/{args.campaign}"
     files_to_transfer = [
         fragment_abspath,
-        f"{MCDIRPATH}/campaigns/{args.campaign}/run.sh",
+        f"{campaign_dir}/run.sh",
     ]
 
-    campaign_dir = f"{MCDIRPATH}/campaigns/{args.campaign}/"
     os.chdir(campaign_dir)
     if args.use_pileup_file:
         pileup_file = os.path.join(campaign_dir, "pileupinput.dat")
