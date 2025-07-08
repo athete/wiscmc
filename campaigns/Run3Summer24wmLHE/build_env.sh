@@ -6,9 +6,10 @@ fi
 
 mkdir env && cd env
 
+CMSSW_RELEASE=CMSSW_14_1_0
 source /cvmfs/cms.cern.ch/cmsset_default.sh
-cmsrel CMSSW_14_1_0
-cd CMSSW_14_1_0/src
+cmsrel $CMSSW_RELEASE
+cd $CMSSW_RELEASE/src
 eval `scram runtime -sh`
 scram b
 cd ../../

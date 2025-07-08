@@ -122,7 +122,7 @@ def main() -> None:
         "--output-dir",
         type=str,
         default=None,
-        help="Where to output the generated NanoAOD (and MiniAOD, if requested) files",
+        help="Where to output the generated NanoAOD (and MiniAOD, if requested) files.",
     )
     parser.add_argument(
         "--keep_mini", action="store_true", help="Save produced MiniAOD files to disk"
