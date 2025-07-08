@@ -66,7 +66,7 @@ done
         if args.scouting:
             f.write(f"xrdcp -f -r -p ./ScoutingNanoAOD/ {SAVEPATH}\n")
         else:
-            f.write(f"xrdcp -f -r -p ./NanoAOD/ {SAVEPATH}/\n")
+            f.write(f"xrdcp -f -r -p ./NanoAOD/ {SAVEPATH}\n")
         if args.keep_mini:
             f.write(f"xrdcp -f -r -p ./MiniAOD/ {SAVEPATH}\n")
 

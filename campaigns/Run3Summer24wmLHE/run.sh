@@ -5,6 +5,9 @@
 # source run.sh MCDatasetName /path/to/fragment.py NEVENTS JOBINDEX NTHREADS filelist:/path/to/pileup/list.txt is_scouting
 echo $@
 
+CMSSW_RELEASE=CMSSW_14_1_0
+GT=140X_mcRun3_2024_realistic_v26
+
 if [ -z "$1" ]; then
     echo "Argument 1 (name of dataset) is mandatory."
     return 1
@@ -12,7 +15,7 @@ fi
 NAME=$1
 
 if [ -z $2 ]; then
-    echo "Argument 2 (path to fragment) is mandatory."`
+    echo "Argument 2 (path to fragment) is mandatory."
     return 1
 fi
 FRAGMENTPATH=$2
@@ -41,15 +44,15 @@ fi
 RSEED=$((JOBINDEX * MAX_NTHREADS * 4 + 1001))
 
 if [ -z "$6" ]; then
-    PILEUP_FILELIST="dbs:/Neutrino_E-10_gun/RunIIISummer24PrePremix-Premixlib2024_140X_mcRun3_2024_realistic_v26-v1/PREMIX"
+    PILEUP_FILELIST="dbs:/Neutrino_E-10_gun/RunIIISummer24PrePremix-Premixlib2024_$GT-v1/PREMIX"
 else
     PILEUP_FILELIST="filelist:$6"
 fi
 
 if [ -z "$7" ]; then
-    SCOUTING=true
-else
     SCOUTING=false
+else
+    SCOUTING=true
 fi
 
 echo $@
@@ -58,16 +61,14 @@ echo "Dataset Name=$NAME"
 echo "NEvents=$NEVENTS"
 echo "Random seed=$RSEED"
 echo "Pileup filelist=$PILEUP_FILELIST"
-echo "Enable Scouting=$PILEUP_FILELIST"
+echo "Enable Scouting=$SCOUTING"
 
 # setup the environment
-if [ -r CMSSW_14_1_0/src ] ; then
-    echo "Release CMSSW_14_1_0 already exists"
-    # cd CMSSW_14_1_0/src
-    # eval `scram runtime -sh`
+if [ -r $CMSSW_RELEASE/src ] ; then
+    echo "Release $CMSSW_RELEASE already exists"
 else 
-    cmsrel CMSSW_14_1_0
-    cd CMSSW_14_1_0/src
+    cmsrel $CMSSW_RELEASE
+    cd $CMSSW_RELEASE/src
     eval `scram runtime -sh`
 fi
 
@@ -95,7 +96,7 @@ cmsDriver.py Configuration/GenProduction/python/fragment.py \
     --eventcontent RAWSIM,LHE \
     --datatier GEN-SIM,LHE \
     --fileout "file:wmLHEGS/Run3Summer24_wmLHEGS_${NAME}_${JOBINDEX}.root" \
-    --conditions 140X_mcRun3_2024_realistic_v26 \
+    --conditions $GT \
     --beamspot Realistic25ns13p6TeVEarly2023Collision \
     --step LHE,GEN,SIM \
     --geometry DB:Extended \
@@ -119,7 +120,7 @@ cmsDriver.py \
     --datatier GEN-SIM-RAW \
     --filein "file:wmLHEGS/Run3Summer24_wmLHEGS_${NAME}_${JOBINDEX}.root" \
     --fileout "file:DIGIPremix/Run3Summer24_DRPremix0_${NAME}_${JOBINDEX}.root" \
-    --conditions 140X_mcRun3_2024_realistic_v26 \
+    --conditions $GT \
     --step DIGI,DATAMIX,L1,DIGI2RAW,HLT:2024v14 \
     --pileup_input "$PILEUP_FILELIST" \
     --geometry DB:Extended \
@@ -143,7 +144,7 @@ cmsDriver.py \
     --datatier AODSIM \
     --filein "file:DIGIPremix/Run3Summer24_DRPremix0_${NAME}_${JOBINDEX}.root" \
     --fileout "file:RECO/Run3Summer24_RECO_${NAME}_${JOBINDEX}.root" \
-    --conditions 140X_mcRun3_2024_realistic_v26 \
+    --conditions $GT \
     --step RAW2DIGI,L1Reco,RECO,RECOSIM \
     --geometry DB:Extended \
     --era Run3_2024 \
@@ -164,7 +165,7 @@ cmsDriver.py \
     --datatier MINIAODSIM \
     --filein "file:RECO/Run3Summer24_RECO_${NAME}_${JOBINDEX}.root" \
     --fileout "file:MiniAOD/Run3Summer24_MiniAOD_${NAME}_${JOBINDEX}.root" \
-    --conditions 140X_mcRun3_2024_realistic_v26 \
+    --conditions $GT \
     --step PAT \
     --geometry DB:Extended \
     --era Run3_2024 \
@@ -186,7 +187,7 @@ if [ "$SCOUTING" = true ]; then
         --datatier NANOAODSIM \
         --filein "file:MiniAOD/Run3Summer24_MiniAOD_${NAME}_${JOBINDEX}.root" \
         --fileout "file:ScoutingNanoAOD/Run3Summer24_ScoutingNanoAOD_${NAME}_${JOBINDEX}.root" \
-        --conditions 140X_mcRun3_2024_realistic_v26 \
+        --conditions $GT \
         --step NANO:@Scout \
         --scenario pp \
         --geometry DB:Extended \
@@ -209,7 +210,7 @@ else
         --datatier NANOAODSIM \
         --filein "file:MiniAOD/Run3Summer24_MiniAOD_${NAME}_${JOBINDEX}.root" \
         --fileout "file:NanoAOD/Run3Summer24_NanoAOD_${NAME}_${JOBINDEX}.root" \
-        --conditions 140X_mcRun3_2024_realistic_v26 \
+        --conditions $GT \
         --step NANO \
         --scenario pp \
         --geometry DB:Extended \
