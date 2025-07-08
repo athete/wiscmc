@@ -1,0 +1,24 @@
+[project]
+name = "wiscmc"
+version = "0.1.0"
+description = "A tool for submitting small-scale MC production jobs to HTCondor"
+authors = [
+    {name="Ameya Thete", email="thete@wisc.edu"}
+]
+license = {text="MIT"}
+readme = "README.md"
+requires-python = ">=3.7"
+
+[project.scripts]
+wiscmc = "wiscmc.main:main"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["wiscmc*"]
+
+[tool.setuptools.package-data]
+"wiscmc.campaigns.Run3Summer24wmLHE" = ["*.sh"]

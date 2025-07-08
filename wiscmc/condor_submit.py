@@ -4,10 +4,13 @@ from getpass import getuser
 from datetime import datetime
 from pprint import pprint
 
-from utils import get_campaign_os, get_os_container, get_proxy_lifetime, find_x509
+from .utils import find_x509
 
 # Constants and Environment Variables
-MCDIRPATH = os.environ.get("MCDIRPATH", default=os.getcwd())
+
+MCDIRPATH = os.environ.get("MCDIRPATH")
+if not MCDIRPATH:
+    raise EnvironmentError("MCDIRPATH is not set")
 CONDOR_BASE = "$_CONDOR_SCRATCH_DIR"
 USER = getuser()
 XROOTD_REDIRECTOR = "root://cmsxrootd.hep.wisc.edu/"
@@ -71,7 +74,7 @@ done
             f.write(f"xrdcp -f -r -p ./MiniAOD/ {SAVEPATH}\n")
 
 
-def main() -> None:
+def main(args=None) -> None:
     parser = argparse.ArgumentParser(
         description="""
         Submit Monte Carlo production jobs to an HTCondor instance. \n\n
@@ -86,7 +89,7 @@ def main() -> None:
         required=True,
         help="MC campaign to run. Allowed options are: " + ", ".join(CAMPAIGNS),
         choices=CAMPAIGNS,
-        metavar="",
+        metavar=" ",
     )
     parser.add_argument(
         "-e",
@@ -161,7 +164,7 @@ def main() -> None:
     parser.add_argument(
         "--no_submit", action="store_true", help="Prepare jobs but do not submit them"
     )
-    args = parser.parse_args()
+    args = parser.parse_args(args)
 
     # Validate fragment path
     fragment_abspath = os.path.abspath(args.fragment)
